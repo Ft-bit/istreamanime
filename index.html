@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iStreamAnime</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #fff;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 10px 10px;
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #ff4c4c;
+    }
+
+    .search-bar {
+      text-align: center;
+      margin: 20px;
+    }
+
+    .search-bar input {
+      padding: 10px;
+      width: 300px;
+      border-radius: 5px;
+      border: none;
+      font-size: 1em;
+    }
+
+    .anime-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .anime-card {
+      background-color: #1f1f1f;
+      color: #fff;
+      width: 220px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 10px #000;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .anime-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #ff4c4c;
+    }
+
+    .anime-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .anime-card h4 {
+      margin: 10px 0 5px;
+      color: #ff4c4c;
+    }
+
+    .anime-card p {
+      font-size: 0.9em;
+      padding: 0 10px 10px;
+      color: #ccc;
+    }
+
+    .anime-card a {
+      display: block;
+      padding: 10px;
+      background-color: #ff4c4c;
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 0 0 10px 10px;
+    }
+
+    .anime-card a:hover {
+      background-color: #e63939;
+    }
+  </style>
+</head>
+<body>
+  <header>iStreamAnime</header>
+
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search anime..." />
+  </div>
+
+  <div class="anime-grid" id="animeGrid"></div>
+
+  <script>
+    const animeGrid = document.getElementById("animeGrid");
+    const searchInput = document.getElementById("searchInput");
+
+    async function fetchAnime() {
+      const res = await fetch("https://api.jikan.moe/v4/top/anime?limit=40");
+      const data = await res.json();
+      displayAnime(data.data);
+    }
+
+    function displayAnime(animeList) {
+      animeGrid.innerHTML = "";
+      animeList.forEach(anime => {
+        const card = document.createElement("div");
+        card.className = "anime-card";
+        card.innerHTML = `
+          <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
+          <h4>${anime.title}</h4>
+          <p>${anime.synopsis ? anime.synopsis.slice(0, 100) + "..." : "No description available."}</p>
+          <a href="${anime.url}" target="_blank">Watch Now</a>
+        `;
+        animeGrid.appendChild(card);
+      });
+    }
+
+    searchInput.addEventListener("input", async () => {
+      const query = searchInput.value.toLowerCase();
+      const res = await fetch("https://api.jikan.moe/v4/top/anime?limit=40");
+      const data = await res.json();
+      const filtered = data.data.filter(anime =>
+        anime.title.toLowerCase().includes(query)
+      );
+      displayAnime(filtered);
+    });
+
+    fetchAnime();
+  </script>
+</body>
+</html>
