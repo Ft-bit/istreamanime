@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -103,9 +104,13 @@
     const searchInput = document.getElementById("searchInput");
 
     async function fetchAnime() {
-      const res = await fetch("https://api.jikan.moe/v4/top/anime?limit=40");
-      const data = await res.json();
-      displayAnime(data.data);
+      try {
+        const res = await fetch("https://api.jikan.moe/v4/top/anime?limit=40");
+        const data = await res.json();
+        displayAnime(data.data);
+      } catch (error) {
+        animeGrid.innerHTML = "<p style='color:red;'>Failed to load anime previews. Try again later.</p>";
+      }
     }
 
     function displayAnime(animeList) {
