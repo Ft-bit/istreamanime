@@ -107,14 +107,18 @@
     async function fetchAnime() {
       try {
         const res = await fetch("https://api.jikan.moe/v4/top/anime?limit=40");
-        const data = await res.json();
+        const json = await res.json();
 
-        if (!data || !data.data || data.data.length === 0) {
-          animeGrid.innerHTML = "<p style='color:orange;'>No anime data found.</p>";
+        console.log("API response:", json); // ✅ Check structure
+
+        const animeList = json.data || [];
+
+        if (animeList.length === 0) {
+          animeGrid.innerHTML = "<p style='color:orange;'>No anime found.</p>";
           return;
         }
 
-        displayAnime(data.data);
+        displayAnime(animeList);
       } catch (error) {
         console.error("Fetch error:", error);
         animeGrid.innerHTML = "<p style='color:red;'>Failed to load anime previews. Try again later.</p>";
@@ -140,8 +144,9 @@
       const query = searchInput.value.toLowerCase();
       try {
         const res = await fetch("https://api.jikan.moe/v4/top/anime?limit=40");
-        const data = await res.json();
-        const filtered = data.data.filter(anime =>
+        const json = await res.json();
+        const animeList = json.data || [];
+        const filtered = animeList.filter(anime =>
           anime.title.toLowerCase().includes(query)
         );
         displayAnime(filtered);
